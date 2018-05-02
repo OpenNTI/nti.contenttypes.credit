@@ -1,6 +1,6 @@
 import codecs
 from setuptools import setup
-from setuptools import find_packages 
+from setuptools import find_packages
 
 entry_points = {
     'console_scripts': [
@@ -47,12 +47,23 @@ setup(
     namespace_packages=['nti', 'nti.contenttypes'],
     tests_require=TESTS_REQUIRE,
     install_requires=[
+        'nti.containers',
+        'nti.dublincore',
+        'nti.externalization',
+        'nti.intid',
+        'nti.ntiids',
+        'nti.property',
+        'nti.schema',
+        'nti.wref',
         'setuptools',
         'six',
+        'zope.annotation',
         'zope.component',
         'zope.configuration',
         'zope.dottedname',
+        'zope.event',
         'zope.interface',
+        'zope.intid',
         'zope.security',
     ],
     extras_require={
