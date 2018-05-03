@@ -12,8 +12,6 @@ from __future__ import absolute_import
 
 from zope import interface
 
-from zope.annotation.interfaces import IAttributeAnnotatable
-
 from zope.container.constraints import contains
 from zope.container.constraints import containers
 
@@ -57,8 +55,6 @@ class IAwardableCredit(interface.Interface):
     The basic credit type object. This may be defined once and referenced in
     many places.
     """
-    containers('.IAwardableCreditContainer')
-
     credit_definition = Object(ICreditDefinition,
                                title=u'The credit definition',
                                required=True)
@@ -73,19 +69,7 @@ class IAwardableCredit(interface.Interface):
                        required=False)
 
 
-class IAwardableCreditContext(IAttributeAnnotatable):
+class ICreditTranscript(interface.Interface):
     """
-    An object that may contain awardable credits.
+    An object that provides :class:`IAwardedCredit` objects earned by a user.
     """
-
-
-class IAwardableCreditContainer(IContainer):
-    """
-    An object that stores awardable credits.
-    """
-    contains(IAwardableCredit)
-
-    def get_awardable_credits_for_user(user):
-        """
-        Return the awardable credits that may be possible for the given user.
-        """

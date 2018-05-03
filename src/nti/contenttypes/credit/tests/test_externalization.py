@@ -8,6 +8,7 @@ from __future__ import absolute_import
 # pylint: disable=protected-access,too-many-public-methods,arguments-differ
 
 from hamcrest import is_
+from hamcrest import is_not
 from hamcrest import not_none
 from hamcrest import assert_that
 from hamcrest import has_property
@@ -72,6 +73,15 @@ class TestExternalization(unittest.TestCase):
 
         assert_that(new_io, has_property('credit_type', is_(u'Credit')))
         assert_that(new_io, has_property('credit_units', is_(u'Hours')))
+
+    def test_equality(self):
+        cd1 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours')
+        cd2 = CreditDefinition(credit_type=u'Credit_other', credit_units=u'Hours')
+        cd3 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours_other')
+        cd4 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours')
+        assert_that(cd1, is_(cd4))
+        assert_that(cd1, is_not(cd2))
+        assert_that(cd1, is_not(cd3))
 
     def test_awardable_credit(self):
         credit_definition = CreditDefinition(credit_type=u'Credit',
