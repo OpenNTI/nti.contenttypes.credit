@@ -19,7 +19,8 @@
     <include package="nti.externalization" />
 
     <ext:registerAutoPackageIO
-        root_interfaces=".interfaces.IAwardableCredit
+        root_interfaces=".interfaces.IAwardedCredit
+                         .interfaces.IAwardableCredit
                          .interfaces.ICreditDefinition"
         modules=".credit" />
 

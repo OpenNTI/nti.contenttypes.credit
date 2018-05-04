@@ -14,6 +14,11 @@ from zope.cachedescriptors.property import Lazy
 
 from zope.container.contained import Contained
 
+from nti.contenttypes.credit.common import generate_awarded_credit_ntiid
+from nti.contenttypes.credit.common import generate_awardable_credit_ntiid
+from nti.contenttypes.credit.common import generate_credit_definition_ntiid
+
+from nti.contenttypes.credit.interfaces import IAwardedCredit
 from nti.contenttypes.credit.interfaces import IAwardableCredit
 from nti.contenttypes.credit.interfaces import ICreditDefinition
 from nti.contenttypes.credit.interfaces import ICreditDefinitionContainer
@@ -23,8 +28,6 @@ from nti.containers.containers import CaseInsensitiveCheckingLastModifiedBTreeCo
 from nti.dublincore.time_mixins import PersistentCreatedAndModifiedTimeObject
 
 from nti.externalization.representation import WithRepr
-
-from nti.ntiids.oids import to_external_ntiid_oid
 
 from nti.property.property import alias
 
@@ -42,18 +45,22 @@ logger = __import__('logging').getLogger(__name__)
 @WithRepr
 @EqHash('credit_type', 'credit_units')
 @interface.implementer(ICreditDefinition)
-class CreditDefinition(PersistentCreatedAndModifiedTimeObject, Contained, SchemaConfigured):
+class CreditDefinition(PersistentCreatedAndModifiedTimeObject,
+                       Contained,
+                       SchemaConfigured):
     createDirectFieldProperties(ICreditDefinition)
 
     __parent__ = None
     __name__ = None
+
+    creator = None
     NTIID = alias('ntiid')
 
     mimeType = mime_type = "application/vnd.nextthought.credit.creditdefinition"
 
     @Lazy
     def ntiid(self):
-        return to_external_ntiid_oid(self)
+        return generate_credit_definition_ntiid()
 
 
 @interface.implementer(ICreditDefinitionContainer)
@@ -66,11 +73,14 @@ class CreditDefinitionContainer(CaseInsensitiveCheckingLastModifiedBTreeContaine
 
 @WithRepr
 @interface.implementer(IAwardableCredit)
-class AwardableCredit(PersistentCreatedAndModifiedTimeObject, SchemaConfigured):
+class AwardableCredit(PersistentCreatedAndModifiedTimeObject,
+                      SchemaConfigured):
     createDirectFieldProperties(IAwardableCredit)
 
     __parent__ = None
     _credit_definition = None
+
+    creator = None
     NTIID = alias('ntiid')
 
     mimeType = mime_type = "application/vnd.nextthought.credit.awardablecredit"
@@ -88,4 +98,34 @@ class AwardableCredit(PersistentCreatedAndModifiedTimeObject, SchemaConfigured):
 
     @Lazy
     def ntiid(self):
-        return to_external_ntiid_oid(self)
+        return generate_awardable_credit_ntiid()
+
+
+@WithRepr
+@interface.implementer(IAwardedCredit)
+class AwardedCredit(PersistentCreatedAndModifiedTimeObject,
+                    SchemaConfigured):
+    createDirectFieldProperties(IAwardedCredit)
+
+    __parent__ = None
+    _credit_definition = None
+
+    creator = None
+    NTIID = alias('ntiid')
+
+    mimeType = mime_type = "application/vnd.nextthought.credit.awardedcredit"
+
+    def __init__(self, credit_definition=None, *args, **kwargs):
+        SchemaConfigured.__init__(self, *args, **kwargs)
+        self._credit_definition = IWeakRef(credit_definition)
+
+    @property
+    def credit_definition(self):
+        result = None
+        if self._credit_definition is not None:
+            result = self._credit_definition()
+        return result
+
+    @Lazy
+    def ntiid(self):
+        return generate_awarded_credit_ntiid()
