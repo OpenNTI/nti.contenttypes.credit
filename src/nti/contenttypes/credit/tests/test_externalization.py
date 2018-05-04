@@ -53,6 +53,8 @@ class TestExternalization(unittest.TestCase):
         container = CreditDefinitionContainer()
         credit_definition = CreditDefinition(credit_type=u'Credit',
                                              credit_units=u'Hours')
+        definition_ntiid = credit_definition.ntiid
+        assert_that(credit_definition.ntiid, is_(definition_ntiid))
         assert_that(credit_definition,
                     verifiably_provides(ICreditDefinition))
 
@@ -64,6 +66,7 @@ class TestExternalization(unittest.TestCase):
         assert_that(ext_obj[LAST_MODIFIED], not_none())
         assert_that(ext_obj['credit_type'], is_(u'Credit'))
         assert_that(ext_obj['credit_units'], is_(u'Hours'))
+        assert_that(ext_obj['NTIID'], is_(definition_ntiid))
 
         factory = find_factory_for(ext_obj)
         assert_that(factory, not_none())
@@ -73,6 +76,7 @@ class TestExternalization(unittest.TestCase):
 
         assert_that(new_io, has_property('credit_type', is_(u'Credit')))
         assert_that(new_io, has_property('credit_units', is_(u'Hours')))
+        assert_that(new_io, has_property('NTIID', is_(definition_ntiid)))
 
     def test_equality(self):
         cd1 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours')

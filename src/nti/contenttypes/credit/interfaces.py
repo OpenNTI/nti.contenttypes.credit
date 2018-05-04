@@ -45,7 +45,8 @@ class ICreditDefinition(IContained):
 
 class ICreditDefinitionContainer(IContainer):
     """
-    A storage container for :class:`ICreditDefinition` objects.
+    A storage container for :class:`ICreditDefinition` objects, accessible as
+    a registered utility.
     """
     contains(ICreditDefinition)
 
