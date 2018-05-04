@@ -18,6 +18,7 @@ from nti.contenttypes.credit.common import generate_awarded_credit_ntiid
 from nti.contenttypes.credit.common import generate_awardable_credit_ntiid
 from nti.contenttypes.credit.common import generate_credit_definition_ntiid
 
+from nti.contenttypes.credit.interfaces import IAwardedCredit
 from nti.contenttypes.credit.interfaces import IAwardableCredit
 from nti.contenttypes.credit.interfaces import ICreditDefinition
 from nti.contenttypes.credit.interfaces import ICreditDefinitionContainer
@@ -51,6 +52,8 @@ class CreditDefinition(PersistentCreatedAndModifiedTimeObject,
 
     __parent__ = None
     __name__ = None
+
+    creator = None
     NTIID = alias('ntiid')
 
     mimeType = mime_type = "application/vnd.nextthought.credit.creditdefinition"
@@ -76,6 +79,8 @@ class AwardableCredit(PersistentCreatedAndModifiedTimeObject,
 
     __parent__ = None
     _credit_definition = None
+
+    creator = None
     NTIID = alias('ntiid')
 
     mimeType = mime_type = "application/vnd.nextthought.credit.awardablecredit"
@@ -94,3 +99,33 @@ class AwardableCredit(PersistentCreatedAndModifiedTimeObject,
     @Lazy
     def ntiid(self):
         return generate_awardable_credit_ntiid()
+
+
+@WithRepr
+@interface.implementer(IAwardedCredit)
+class AwardedCredit(PersistentCreatedAndModifiedTimeObject,
+                    SchemaConfigured):
+    createDirectFieldProperties(IAwardedCredit)
+
+    __parent__ = None
+    _credit_definition = None
+
+    creator = None
+    NTIID = alias('ntiid')
+
+    mimeType = mime_type = "application/vnd.nextthought.credit.awardedcredit"
+
+    def __init__(self, credit_definition=None, *args, **kwargs):
+        SchemaConfigured.__init__(self, *args, **kwargs)
+        self._credit_definition = IWeakRef(credit_definition)
+
+    @property
+    def credit_definition(self):
+        result = None
+        if self._credit_definition is not None:
+            result = self._credit_definition()
+        return result
+
+    @Lazy
+    def ntiid(self):
+        return generate_awarded_credit_ntiid()

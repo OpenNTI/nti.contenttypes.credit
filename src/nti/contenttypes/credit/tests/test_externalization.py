@@ -22,6 +22,7 @@ from zope import component
 
 from zc.intid import IIntIds
 
+from nti.contenttypes.credit.credit import AwardedCredit
 from nti.contenttypes.credit.credit import AwardableCredit
 from nti.contenttypes.credit.credit import CreditDefinition
 from nti.contenttypes.credit.credit import CreditDefinitionContainer
@@ -104,6 +105,33 @@ class TestExternalization(unittest.TestCase):
         assert_that(ext_obj[CREATED_TIME], not_none())
         assert_that(ext_obj[LAST_MODIFIED], not_none())
         assert_that(ext_obj['amount'], is_(42))
+        assert_that(ext_obj['credit_definition']['credit_type'], is_(u'Credit'))
+        assert_that(ext_obj['credit_definition']['credit_units'], is_(u'Hours'))
+
+        factory = find_factory_for(ext_obj)
+        assert_that(factory, not_none())
+
+    def test_awarded_credit(self):
+        credit_definition = CreditDefinition(credit_type=u'Credit',
+                                             credit_units=u'Hours')
+        intids = fudge.Fake().provides('getObject').returns(credit_definition)
+        intids.provides('getId').returns(10)
+        component.getGlobalSiteManager().registerUtility(intids, IIntIds)
+        add_intid(credit_definition)
+        awarded_credit = AwardedCredit(title=u'Credit conference',
+                                       description=u'desc',
+                                       amount=42,
+                                       credit_definition=credit_definition)
+
+        ext_obj = to_external_object(awarded_credit)
+        assert_that(ext_obj[CLASS], is_('AwardedCredit'))
+        assert_that(ext_obj[MIMETYPE],
+                    is_(AwardedCredit.mime_type))
+        assert_that(ext_obj[CREATED_TIME], not_none())
+        assert_that(ext_obj[LAST_MODIFIED], not_none())
+        assert_that(ext_obj['amount'], is_(42))
+        assert_that(ext_obj['title'], is_(u'Credit conference'))
+        assert_that(ext_obj['description'], is_(u'desc'))
         assert_that(ext_obj['credit_definition']['credit_type'], is_(u'Credit'))
         assert_that(ext_obj['credit_definition']['credit_units'], is_(u'Hours'))
 

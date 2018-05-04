@@ -18,6 +18,9 @@ from zope.container.constraints import containers
 from zope.container.interfaces import IContained
 from zope.container.interfaces import IContainer
 
+from nti.base.interfaces import ICreated
+from nti.base.interfaces import ILastModified
+
 from nti.ntiids.schema import ValidNTIID
 
 from nti.schema.field import Number
@@ -25,7 +28,7 @@ from nti.schema.field import Object
 from nti.schema.field import DecodingValidTextLine as ValidTextLine
 
 
-class ICreditDefinition(IContained):
+class ICreditDefinition(IContained, ICreated, ILastModified):
     """
     The basic credit type object. This may be defined once and referenced in
     many places.
@@ -51,10 +54,9 @@ class ICreditDefinitionContainer(IContainer):
     contains(ICreditDefinition)
 
 
-class IAwardableCredit(interface.Interface):
+class IAwardableCredit(ICreated, ILastModified):
     """
-    The basic credit type object. This may be defined once and referenced in
-    many places.
+    Composes a credit definition with a value amount, useful for displaying.
     """
     credit_definition = Object(ICreditDefinition,
                                title=u'The credit definition',
@@ -67,6 +69,28 @@ class IAwardableCredit(interface.Interface):
                    default=None)
 
     NTIID = ValidNTIID(title=u"The NTIID of the awardable credit",
+                       required=False)
+
+
+class IAwardedCredit(ICreated, ILastModified):
+    """
+    A credit that has been awarded to a user.
+    """
+    title = ValidTextLine(title=u"Title of the awarded credit", required=True)
+
+    description = ValidTextLine(title=u"Description of the awarded credit", required=False)
+
+    credit_definition = Object(ICreditDefinition,
+                               title=u'The credit definition',
+                               required=True)
+
+    amount = Number(title=u"Amount",
+                   description=u"The amount of the ICreditDefinition units that are awarded.",
+                   required=True,
+                   min=0.0,
+                   default=None)
+
+    NTIID = ValidNTIID(title=u"The NTIID of the awarded credit",
                        required=False)
 
 
