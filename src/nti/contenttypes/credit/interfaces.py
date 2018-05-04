@@ -53,6 +53,11 @@ class ICreditDefinitionContainer(IContainer):
     """
     contains(ICreditDefinition)
 
+    def get_credit_definition(ntiid):
+        """
+        Lookup the :class:`ICreditDefinition` by ntiid.
+        """
+
 
 class IAwardableCredit(ICreated, ILastModified):
     """

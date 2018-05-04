@@ -8,6 +8,7 @@ from __future__ import absolute_import
 # pylint: disable=protected-access,too-many-public-methods,arguments-differ
 
 from hamcrest import is_
+from hamcrest import none
 from hamcrest import is_not
 from hamcrest import not_none
 from hamcrest import assert_that
@@ -28,6 +29,7 @@ from nti.contenttypes.credit.credit import CreditDefinition
 from nti.contenttypes.credit.credit import CreditDefinitionContainer
 
 from nti.contenttypes.credit.interfaces import ICreditDefinition
+from nti.contenttypes.credit.interfaces import ICreditDefinitionContainer
 
 from nti.contenttypes.credit.tests import SharedConfiguringTestLayer
 
@@ -40,6 +42,8 @@ from nti.externalization.internalization import find_factory_for
 
 from nti.intid.common import add_intid
 
+from nti.ntiids.ntiids import find_object_with_ntiid
+
 CLASS = StandardExternalFields.CLASS
 MIMETYPE = StandardExternalFields.MIMETYPE
 CREATED_TIME = StandardExternalFields.CREATED_TIME
@@ -50,14 +54,29 @@ class TestExternalization(unittest.TestCase):
 
     layer = SharedConfiguringTestLayer
 
+    def setUp(self):
+        self.container = CreditDefinitionContainer()
+        component.getGlobalSiteManager().registerUtility(self.container,
+                                                         ICreditDefinitionContainer)
+
+    def tearDown(self):
+        component.getGlobalSiteManager().unregisterUtility(self.container,
+                                                           ICreditDefinitionContainer)
+
     def test_credit_definition(self):
-        container = CreditDefinitionContainer()
         credit_definition = CreditDefinition(credit_type=u'Credit',
                                              credit_units=u'Hours')
         definition_ntiid = credit_definition.ntiid
         assert_that(credit_definition.ntiid, is_(definition_ntiid))
         assert_that(credit_definition,
                     verifiably_provides(ICreditDefinition))
+
+        # NTIID resolving
+        found_definition = find_object_with_ntiid(definition_ntiid)
+        assert_that(found_definition, none())
+        self.container[definition_ntiid] = credit_definition
+        found_definition = find_object_with_ntiid(definition_ntiid)
+        assert_that(found_definition, is_(credit_definition))
 
         ext_obj = to_external_object(credit_definition)
         assert_that(ext_obj[CLASS], is_('CreditDefinition'))
@@ -72,7 +91,7 @@ class TestExternalization(unittest.TestCase):
         factory = find_factory_for(ext_obj)
         assert_that(factory, not_none())
         new_io = factory()
-        new_io.__parent__ = container
+        new_io.__parent__ = self.container
         update_from_external_object(new_io, ext_obj, require_updater=True)
 
         assert_that(new_io, has_property('credit_type', is_(u'Credit')))
