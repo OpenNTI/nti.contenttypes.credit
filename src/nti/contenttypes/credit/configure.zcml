@@ -24,6 +24,10 @@
                          .interfaces.ICreditDefinition"
         modules=".credit" />
 
+    <!-- NTIIDs -->
+    <utility factory=".ntiids._CreditDefinitionNTIIDResolver"
+             name="CreditDefinition" />
+
     <adapter factory="nti.intid.wref.NoCachingArbitraryOrderableWeakRef"
              provides="nti.wref.interfaces.IWeakRef"
              for="nti.contenttypes.credit.interfaces.ICreditDefinition" />

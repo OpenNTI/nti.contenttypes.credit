@@ -70,6 +70,14 @@ class CreditDefinitionContainer(CaseInsensitiveCheckingLastModifiedBTreeContaine
 
     __parent__ = None
 
+    def get_credit_definition(self, ntiid):
+        """
+        Lookup the :class:`ICreditDefinition` by ntiid.
+
+        TODO: We should queryNextUtility lookup too.
+        """
+        return self.get(ntiid)
+
 
 @WithRepr
 @interface.implementer(IAwardableCredit)
