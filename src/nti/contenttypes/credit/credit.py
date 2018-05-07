@@ -78,6 +78,15 @@ class CreditDefinitionContainer(CaseInsensitiveCheckingLastModifiedBTreeContaine
         """
         return self.get(ntiid)
 
+    def add_credit_definition(self, new_credit_definition):
+        # TODO: queryNextUtility
+        # De-duping; this should be small per site.
+        for credit_definition in self.values():
+            if new_credit_definition == credit_definition:
+                return credit_definition
+        self[new_credit_definition.ntiid] = new_credit_definition
+        return new_credit_definition
+
 
 @WithRepr
 @interface.implementer(IAwardableCredit)

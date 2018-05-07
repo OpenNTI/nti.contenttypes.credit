@@ -66,6 +66,8 @@ class TestExternalization(unittest.TestCase):
     def test_credit_definition(self):
         credit_definition = CreditDefinition(credit_type=u'Credit',
                                              credit_units=u'Hours')
+        credit_definition2 = CreditDefinition(credit_type=u'Credit',
+                                              credit_units=u'Hours')
         definition_ntiid = credit_definition.ntiid
         assert_that(credit_definition.ntiid, is_(definition_ntiid))
         assert_that(credit_definition,
@@ -75,6 +77,14 @@ class TestExternalization(unittest.TestCase):
         found_definition = find_object_with_ntiid(definition_ntiid)
         assert_that(found_definition, none())
         self.container[definition_ntiid] = credit_definition
+
+        # De-duping
+        added_def = self.container.add_credit_definition(credit_definition)
+        assert_that(added_def, is_(credit_definition))
+
+        added_def = self.container.add_credit_definition(credit_definition2)
+        assert_that(added_def, is_(credit_definition))
+
         found_definition = find_object_with_ntiid(definition_ntiid)
         assert_that(found_definition, is_(credit_definition))
 
