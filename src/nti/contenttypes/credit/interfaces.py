@@ -58,6 +58,13 @@ class ICreditDefinitionContainer(IContainer):
         Lookup the :class:`ICreditDefinition` by ntiid.
         """
 
+    def add_credit_definition(new_credit_definition):
+        """
+        Insert the :class:`ICreditDefinition` by ntiid. This will de-dupe, ensuring
+        that only one credit definition is in this container. This will return the
+        credit definition object stored in the container.
+        """
+
 
 class IAwardableCredit(ICreated, ILastModified):
     """
