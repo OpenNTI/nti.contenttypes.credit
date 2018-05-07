@@ -33,8 +33,6 @@ class ICreditDefinition(IContained, ICreated, ILastModified):
     The basic credit type object. This may be defined once and referenced in
     many places.
     """
-    containers('.ICreditDefinitionContainer')
-
     credit_type = ValidTextLine(title=u'The credit type',
                                 required=True)
 
