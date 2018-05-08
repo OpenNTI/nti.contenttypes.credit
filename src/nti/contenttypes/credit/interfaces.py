@@ -10,10 +10,7 @@ from __future__ import absolute_import
 
 # pylint: disable=inherit-non-class
 
-from zope import interface
-
 from zope.container.constraints import contains
-from zope.container.constraints import containers
 
 from zope.container.interfaces import IContained
 from zope.container.interfaces import IContainer
@@ -82,7 +79,7 @@ class IAwardableCredit(ICreated, ILastModified):
                        required=False)
 
 
-class IAwardedCredit(ICreated, ILastModified):
+class IAwardedCredit(ICreated, ILastModified, IContained):
     """
     A credit that has been awarded to a user.
     """
@@ -104,7 +101,9 @@ class IAwardedCredit(ICreated, ILastModified):
                        required=False)
 
 
-class ICreditTranscript(interface.Interface):
+class ICreditTranscript(IContainer):
     """
     An object that provides :class:`IAwardedCredit` objects earned by a user.
     """
+
+    contains(IAwardedCredit)
