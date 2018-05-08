@@ -165,4 +165,4 @@ class TestExternalization(unittest.TestCase):
         assert_that(ext_obj['credit_definition']['credit_units'], is_(u'Hours'))
 
         factory = find_factory_for(ext_obj)
-        assert_that(factory, not_none())
+        assert_that(factory, none())
