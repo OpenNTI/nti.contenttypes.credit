@@ -113,9 +113,11 @@ class TestExternalization(unittest.TestCase):
         cd2 = CreditDefinition(credit_type=u'Credit_other', credit_units=u'Hours')
         cd3 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours_other')
         cd4 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours')
+        cd_lower = CreditDefinition(credit_type=u'credit', credit_units=u'hours')
         assert_that(cd1, is_(cd4))
         assert_that(cd1, is_not(cd2))
         assert_that(cd1, is_not(cd3))
+        assert_that(cd1, is_(cd_lower))
 
     def test_awardable_credit(self):
         credit_definition = CreditDefinition(credit_type=u'Credit',
