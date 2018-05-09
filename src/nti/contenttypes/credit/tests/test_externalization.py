@@ -19,6 +19,9 @@ from nti.testing.matchers import verifiably_provides
 import fudge
 import unittest
 
+from datetime import datetime
+from datetime import timedelta
+
 from zope import component
 
 from zc.intid import IIntIds
@@ -113,9 +116,11 @@ class TestExternalization(unittest.TestCase):
         cd2 = CreditDefinition(credit_type=u'Credit_other', credit_units=u'Hours')
         cd3 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours_other')
         cd4 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours')
+        cd_lower = CreditDefinition(credit_type=u'credit', credit_units=u'hours')
         assert_that(cd1, is_(cd4))
         assert_that(cd1, is_not(cd2))
         assert_that(cd1, is_not(cd3))
+        assert_that(cd1, is_(cd_lower))
 
     def test_awardable_credit(self):
         credit_definition = CreditDefinition(credit_type=u'Credit',
@@ -147,10 +152,13 @@ class TestExternalization(unittest.TestCase):
         intids.provides('getId').returns(10)
         component.getGlobalSiteManager().registerUtility(intids, IIntIds)
         add_intid(credit_definition)
+        yesterday = datetime.utcnow() - timedelta(days=1)
         awarded_credit = AwardedCredit(title=u'Credit conference',
                                        description=u'desc',
                                        amount=42,
-                                       credit_definition=credit_definition)
+                                       credit_definition=credit_definition,
+                                       issuer=u'my issuer',
+                                       awarded_date=yesterday)
 
         ext_obj = to_external_object(awarded_credit)
         assert_that(ext_obj[CLASS], is_('AwardedCredit'))
@@ -161,6 +169,8 @@ class TestExternalization(unittest.TestCase):
         assert_that(ext_obj['amount'], is_(42))
         assert_that(ext_obj['title'], is_(u'Credit conference'))
         assert_that(ext_obj['description'], is_(u'desc'))
+        assert_that(ext_obj['issuer'], is_(u'my issuer'))
+        assert_that(ext_obj['awarded_date'], not_none())
         assert_that(ext_obj['credit_definition']['credit_type'], is_(u'Credit'))
         assert_that(ext_obj['credit_definition']['credit_units'], is_(u'Hours'))
 

@@ -31,8 +31,6 @@ from nti.externalization.representation import WithRepr
 
 from nti.property.property import alias
 
-from nti.schema.eqhash import EqHash
-
 from nti.schema.fieldproperty import createDirectFieldProperties
 
 from nti.schema.schema import SchemaConfigured
@@ -43,7 +41,6 @@ logger = __import__('logging').getLogger(__name__)
 
 
 @WithRepr
-@EqHash('credit_type', 'credit_units')
 @interface.implementer(ICreditDefinition)
 class CreditDefinition(PersistentCreatedAndModifiedTimeObject,
                        Contained,
@@ -57,6 +54,20 @@ class CreditDefinition(PersistentCreatedAndModifiedTimeObject,
     NTIID = alias('ntiid')
 
     mimeType = mime_type = "application/vnd.nextthought.credit.creditdefinition"
+
+    def __eq__(self, other):
+        try:
+            return self is other \
+                or (self.credit_type.lower(), self.credit_units.lower()) == (other.credit_type.lower(), other.credit_units.lower())
+        except AttributeError:
+            return NotImplemented
+
+    def _ne__(self, other):
+        try:
+            return self is not other \
+                and (self.credit_type.lower(), self.credit_units.lower()) != (other.credit_type.lower(), other.credit_units.lower())
+        except AttributeError:
+            return NotImplemented
 
     @Lazy
     def ntiid(self):
@@ -152,3 +163,11 @@ class AwardedCredit(PersistentCreatedAndModifiedTimeObject,
     @Lazy
     def ntiid(self):
         return generate_awarded_credit_ntiid()
+
+    @Lazy
+    def issuer(self):
+        return getattr(self.creator, 'username', self.creator)
+
+    @Lazy
+    def awarded_date(self):
+        return self.created
