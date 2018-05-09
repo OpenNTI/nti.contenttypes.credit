@@ -22,6 +22,7 @@ from nti.ntiids.schema import ValidNTIID
 
 from nti.schema.field import Number
 from nti.schema.field import Object
+from nti.schema.field import ValidDatetime
 from nti.schema.field import DecodingValidTextLine as ValidTextLine
 
 
@@ -96,6 +97,15 @@ class IAwardedCredit(ICreated, ILastModified, IContained):
                    required=True,
                    min=0.0,
                    default=None)
+
+    awarded_date = ValidDatetime(title=u"This awarded date",
+                                 description=u"""When the credit was awarded. If not provided, will
+                                 default to created date.""",
+                                 required=True)
+
+    issuer = ValidTextLine(title=u"This issue of the credit",
+                           description=u"""This issue of the credit.""",
+                           required=False)
 
     NTIID = ValidNTIID(title=u"The NTIID of the awarded credit",
                        required=False)

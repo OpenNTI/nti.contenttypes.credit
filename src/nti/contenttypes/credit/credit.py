@@ -163,3 +163,11 @@ class AwardedCredit(PersistentCreatedAndModifiedTimeObject,
     @Lazy
     def ntiid(self):
         return generate_awarded_credit_ntiid()
+
+    @Lazy
+    def issuer(self):
+        return getattr(self.creator, 'username', self.creator)
+
+    @Lazy
+    def awarded_date(self):
+        return self.created
