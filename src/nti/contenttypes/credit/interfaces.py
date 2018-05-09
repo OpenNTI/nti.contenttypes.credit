@@ -107,3 +107,9 @@ class ICreditTranscript(IContainer):
     """
 
     contains(IAwardedCredit)
+
+    def iter_awarded_credits():
+        """
+        Returns an iterator over the :class:`IAwardedCredit` objects in this
+        transcript.
+        """
