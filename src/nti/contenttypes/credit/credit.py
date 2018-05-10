@@ -113,10 +113,9 @@ class AwardableCredit(PersistentCreatedAndModifiedTimeObject,
 
     mimeType = mime_type = "application/vnd.nextthought.credit.awardablecredit"
 
-    def __init__(self, credit_definition=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(AwardableCredit, self).__init__(*args, **kwargs)
         SchemaConfigured.__init__(self, *args, **kwargs)
-        self._credit_definition = IWeakRef(credit_definition)
 
     @property
     def credit_definition(self):
@@ -124,6 +123,10 @@ class AwardableCredit(PersistentCreatedAndModifiedTimeObject,
         if self._credit_definition is not None:
             result = self._credit_definition()
         return result
+
+    @credit_definition.setter
+    def credit_definition(self, value):
+        self._credit_definition = IWeakRef(value)
 
     @Lazy
     def ntiid(self):

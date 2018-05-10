@@ -10,6 +10,8 @@ from __future__ import absolute_import
 
 # pylint: disable=inherit-non-class
 
+from zope import interface
+
 from zope.container.constraints import contains
 
 from zope.container.interfaces import IContained
@@ -23,6 +25,7 @@ from nti.ntiids.schema import ValidNTIID
 from nti.schema.field import Number
 from nti.schema.field import Object
 from nti.schema.field import ValidDatetime
+from nti.schema.field import IndexedIterable
 from nti.schema.field import DecodingValidTextLine as ValidTextLine
 
 
@@ -78,6 +81,17 @@ class IAwardableCredit(ICreated, ILastModified):
 
     NTIID = ValidNTIID(title=u"The NTIID of the awardable credit",
                        required=False)
+
+
+class IAwardableCreditContext(interface.Interface):
+    """
+    An object that contains one or many :class:`IAwardableCredit` objects.
+    """
+
+    awardable_credits = IndexedIterable(value_type=Object(IAwardableCredit),
+                                        title=u"The awardable credits",
+                                        required=False,
+                                        min_length=0)
 
 
 class IAwardedCredit(ICreated, ILastModified, IContained):
