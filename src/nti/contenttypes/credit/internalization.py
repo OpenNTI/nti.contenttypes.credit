@@ -22,14 +22,12 @@ from nti.externalization.datastructures import InterfaceObjectIO
 
 from nti.externalization.interfaces import IInternalObjectUpdater
 
-from nti.app.contenttypes.credit.interfaces import IUserAwardedCredit
-
 logger = __import__('logging').getLogger(__name__)
 
 
 class CreditDefinitionNormalizationUpdater(object):
     """
-    Finds and maps to an existing credit definition refduring internalization.
+    Finds and maps to an existing credit definition ref during internalization.
     """
 
     iface_to_update = None
@@ -47,7 +45,7 @@ class CreditDefinitionNormalizationUpdater(object):
             if isinstance(credit_definition, six.string_types):
                 credit_definition_ntiid = credit_definition
             elif isinstance(credit_definition, collections.Mapping):
-                credit_definition_ntiid = credit_definition['ntiid']
+                credit_definition_ntiid = credit_definition.get('ntiid')
             else:
                 credit_definition_ntiid = getattr(credit_definition, 'ntiid', '')
             if credit_definition_ntiid:
@@ -55,7 +53,7 @@ class CreditDefinitionNormalizationUpdater(object):
                 credit_definition_obj = container.get_credit_definition(credit_definition_ntiid)
                 parsed['credit_definition'] = credit_definition_obj
         result = InterfaceObjectIO(self.obj,
-                                   IUserAwardedCredit).updateFromExternalObject(parsed)
+                                   self.iface_to_update).updateFromExternalObject(parsed)
         return result
 
 
