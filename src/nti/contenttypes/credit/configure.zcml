@@ -24,6 +24,14 @@
                          .interfaces.ICreditDefinition"
         modules=".credit" />
 
+    <adapter factory=".internalization._AwardedCreditUpdater"
+             for=".interfaces.IAwardedCredit"
+             provides="nti.externalization.interfaces.IInternalObjectUpdater" />
+
+    <adapter factory=".internalization._AwardableCreditUpdater"
+             for=".interfaces.IAwardableCredit"
+             provides="nti.externalization.interfaces.IInternalObjectUpdater" />
+
     <!-- NTIIDs -->
     <utility factory=".ntiids._CreditDefinitionNTIIDResolver"
              name="CreditDefinition" />
