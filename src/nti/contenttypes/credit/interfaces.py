@@ -35,11 +35,15 @@ class ICreditDefinition(IContained, ICreated, ILastModified):
     many places.
     """
     credit_type = ValidTextLine(title=u'The credit type',
-                                required=True)
+                                required=True,
+                                min_length=1,
+                                max_length=16)
 
     credit_units = ValidTextLine(title=u'The course units (hours, points, etc)',
                                  description=u'The course units (hours, points, etc)',
-                                 required=True)
+                                 required=True,
+                                 min_length=0,
+                                 max_length=16)
 
     NTIID = ValidNTIID(title=u"The NTIID of the credit definition",
                        required=False)
