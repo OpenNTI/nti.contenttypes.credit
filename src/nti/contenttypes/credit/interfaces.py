@@ -42,6 +42,7 @@ class ICreditDefinition(IContained, ICreated, ILastModified):
     credit_units = ValidTextLine(title=u'The course units (hours, points, etc)',
                                  description=u'The course units (hours, points, etc)',
                                  required=True,
+                                 default='',
                                  min_length=0,
                                  max_length=16)
 

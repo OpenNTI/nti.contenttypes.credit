@@ -39,9 +39,8 @@ from nti.contenttypes.credit.tests import SharedConfiguringTestLayer
 from nti.externalization.externalization import to_external_object
 from nti.externalization.externalization import StandardExternalFields
 
-from nti.externalization.internalization import update_from_external_object
-
 from nti.externalization.internalization import find_factory_for
+from nti.externalization.internalization import update_from_external_object
 
 from nti.intid.common import add_intid
 
@@ -110,6 +109,16 @@ class TestExternalization(unittest.TestCase):
         assert_that(new_io, has_property('credit_type', is_(u'Credit')))
         assert_that(new_io, has_property('credit_units', is_(u'Hours')))
         assert_that(new_io, has_property('NTIID', is_(definition_ntiid)))
+
+        credit_definition = CreditDefinition(credit_type=u'Credit')
+        ext_obj = to_external_object(credit_definition)
+        assert_that(ext_obj[CLASS], is_('CreditDefinition'))
+        assert_that(ext_obj[MIMETYPE],
+                    is_(CreditDefinition.mime_type))
+        assert_that(ext_obj[CREATED_TIME], not_none())
+        assert_that(ext_obj[LAST_MODIFIED], not_none())
+        assert_that(ext_obj['credit_type'], is_(u'Credit'))
+        assert_that(ext_obj['credit_units'], is_(u''))
 
     def test_equality(self):
         cd1 = CreditDefinition(credit_type=u'Credit', credit_units=u'Hours')
