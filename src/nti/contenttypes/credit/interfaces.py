@@ -103,7 +103,9 @@ class IAwardedCredit(ICreated, ILastModified, IContained):
     """
     A credit that has been awarded to a user.
     """
-    title = ValidTextLine(title=u"Title of the awarded credit", required=True)
+    title = ValidTextLine(title=u"Title of the awarded credit",
+                          min_length=2,
+                          required=True)
 
     description = ValidTextLine(title=u"Description of the awarded credit", required=False)
 
