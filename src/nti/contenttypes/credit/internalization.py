@@ -25,18 +25,16 @@ from nti.externalization.interfaces import IInternalObjectUpdater
 logger = __import__('logging').getLogger(__name__)
 
 
-class CreditDefinitionNormalizationUpdater(object):
+class CreditDefinitionNormalizationUpdater(InterfaceObjectIO):
     """
     Finds and maps to an existing credit definition ref during internalization.
     """
 
-    iface_to_update = None
-    __slots__ = ('obj',)
+    __slots__ = ('_ext_self',)
 
-    def __init__(self, obj):
-        self.obj = obj
+    _excluded_in_ivars_ = getattr(InterfaceObjectIO, '_excluded_in_ivars_').union({'NTIID', 'ntiid'})
 
-    def updateFromExternalObject(self, parsed, *unused_args, **unused_kwargs):
+    def updateFromExternalObject(self, parsed, *args, **kwargs):
         """
         Normalize our credit definition.
         """
@@ -52,8 +50,7 @@ class CreditDefinitionNormalizationUpdater(object):
                 container = component.getUtility(ICreditDefinitionContainer)
                 credit_definition_obj = container.get_credit_definition(credit_definition_ntiid)
                 parsed['credit_definition'] = credit_definition_obj
-        result = InterfaceObjectIO(self.obj,
-                                   self.iface_to_update).updateFromExternalObject(parsed)
+        result = super(CreditDefinitionNormalizationUpdater, self).updateFromExternalObject(parsed, *args, **kwargs)
         return result
 
 
@@ -61,11 +58,11 @@ class CreditDefinitionNormalizationUpdater(object):
 @interface.implementer(IInternalObjectUpdater)
 class _AwardedCreditUpdater(CreditDefinitionNormalizationUpdater):
 
-    iface_to_update = IAwardedCredit
+    _ext_iface_upper_bound = IAwardedCredit
 
 
 @component.adapter(IAwardableCredit)
 @interface.implementer(IInternalObjectUpdater)
 class _AwardableCreditUpdater(CreditDefinitionNormalizationUpdater):
 
-    iface_to_update = IAwardableCredit
+    _ext_iface_upper_bound = IAwardableCredit
