@@ -98,6 +98,14 @@ class CreditDefinitionContainer(CaseInsensitiveCheckingLastModifiedBTreeContaine
         self[new_credit_definition.ntiid] = new_credit_definition
         return new_credit_definition
 
+    def get_credit_definition_by(self, credit_type, credit_units):
+        if not credit_type or not credit_units:
+            return None
+        for x in self.values():
+            if (x.credit_type.lower(), x.credit_units.lower()) == (credit_type.lower(), credit_units.lower()):
+                return x
+        return None
+
 
 @WithRepr
 @interface.implementer(IAwardableCredit)

@@ -11,8 +11,10 @@ from hamcrest import is_
 from hamcrest import none
 from hamcrest import is_not
 from hamcrest import not_none
+from hamcrest import has_length
 from hamcrest import assert_that
 from hamcrest import has_property
+from hamcrest import same_instance
 
 from nti.testing.matchers import verifiably_provides
 
@@ -185,3 +187,22 @@ class TestExternalization(unittest.TestCase):
 
         factory = find_factory_for(ext_obj)
         assert_that(factory, none())
+
+
+class TestCreditDefinitionContainer(unittest.TestCase):
+
+    layer = SharedConfiguringTestLayer
+
+    def test_get_credit_definition_by(self):
+        credit_definition = CreditDefinition(credit_type=u'School', credit_units=u'Points')
+        assert_that(credit_definition.__parent__, is_(None))
+        container = CreditDefinitionContainer()
+        container.add_credit_definition(credit_definition)
+        assert_that(credit_definition.__parent__, same_instance(container))
+        assert_that(container, has_length(1))
+
+        assert_that(container.get_credit_definition_by(credit_type=None, credit_units=None), is_(None))
+        assert_that(container.get_credit_definition_by(credit_type=u'School', credit_units=None), is_(None))
+        assert_that(container.get_credit_definition_by(credit_type=None, credit_units=u'Points'), is_(None))
+        assert_that(container.get_credit_definition_by(credit_type=u'School', credit_units=u'Points'), same_instance(credit_definition))
+        assert_that(container.get_credit_definition_by(credit_type=u'school', credit_units=u'points'), same_instance(credit_definition))
