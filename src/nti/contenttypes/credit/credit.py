@@ -92,9 +92,10 @@ class CreditDefinitionContainer(CaseInsensitiveCheckingLastModifiedBTreeContaine
     def add_credit_definition(self, new_credit_definition):
         # TODO: queryNextUtility
         # De-duping; this should be small per site.
-        for credit_definition in self.values():
-            if new_credit_definition == credit_definition:
-                return credit_definition
+        credit_definition = self.get_credit_definition_by(new_credit_definition.credit_type, new_credit_definition.credit_units)
+        if credit_definition is not None:
+            return credit_definition
+
         self[new_credit_definition.ntiid] = new_credit_definition
         return new_credit_definition
 
