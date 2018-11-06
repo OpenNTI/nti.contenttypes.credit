@@ -69,6 +69,11 @@ class ICreditDefinitionContainer(IContainer):
         credit definition object stored in the container.
         """
 
+    def get_credit_definition_by(credit_type, credit_units):
+        """
+        Lookup the :class: `ICreditDefinition` by credit_type and credit_units.
+        """
+
 
 class IAwardableCredit(ICreated, ILastModified):
     """
