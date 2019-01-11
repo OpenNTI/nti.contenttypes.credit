@@ -32,6 +32,10 @@
              for=".interfaces.IAwardableCredit"
              provides="nti.externalization.interfaces.IInternalObjectUpdater" />
 
+    <adapter factory=".internalization._CreditDefinitinoUpdater"
+             for=".interfaces.ICreditDefinition"
+             provides="nti.externalization.interfaces.IInternalObjectUpdater" />
+
     <!-- NTIIDs -->
     <utility factory=".ntiids._CreditDefinitionNTIIDResolver"
              name="CreditDefinition" />

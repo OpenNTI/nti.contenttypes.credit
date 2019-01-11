@@ -100,7 +100,7 @@ class CreditDefinitionContainer(CaseInsensitiveCheckingLastModifiedBTreeContaine
         return new_credit_definition
 
     def get_credit_definition_by(self, credit_type, credit_units):
-        if not credit_type or not credit_units:
+        if credit_type is None or credit_units is None:
             return None
         for x in self.values():
             if (x.credit_type.lower(), x.credit_units.lower()) == (credit_type.lower(), credit_units.lower()):

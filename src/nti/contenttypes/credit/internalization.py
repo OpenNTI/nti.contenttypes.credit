@@ -17,6 +17,7 @@ from zope import interface
 
 from nti.contenttypes.credit.interfaces import IAwardedCredit
 from nti.contenttypes.credit.interfaces import IAwardableCredit
+from nti.contenttypes.credit.interfaces import ICreditDefinition
 from nti.contenttypes.credit.interfaces import ICreditDefinitionContainer
 
 from nti.externalization.datastructures import InterfaceObjectIO
@@ -69,3 +70,14 @@ class _AwardedCreditUpdater(CreditDefinitionNormalizationUpdater):
 class _AwardableCreditUpdater(CreditDefinitionNormalizationUpdater):
 
     _ext_iface_upper_bound = IAwardableCredit
+
+
+@component.adapter(ICreditDefinition)
+@interface.implementer(IInternalObjectUpdater)
+class _CreditDefinitinoUpdater(InterfaceObjectIO):
+
+    _ext_iface_upper_bound = ICreditDefinition
+
+    _excluded_in_ivars_ = frozenset(
+        getattr(InterfaceObjectIO, '_excluded_in_ivars_').union({'NTIID', 'ntiid'})
+    )
