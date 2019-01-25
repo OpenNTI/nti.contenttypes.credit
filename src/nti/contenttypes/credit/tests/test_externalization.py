@@ -108,9 +108,11 @@ class TestExternalization(unittest.TestCase):
         new_io.__parent__ = self.container
         update_from_external_object(new_io, ext_obj, require_updater=True)
 
+        # we don't want NTIID to be updated.
         assert_that(new_io, has_property('credit_type', is_(u'Credit')))
         assert_that(new_io, has_property('credit_units', is_(u'Hours')))
-        assert_that(new_io, has_property('NTIID', is_(definition_ntiid)))
+        assert_that(new_io, has_property('NTIID', is_not(definition_ntiid)))
+        assert_that(new_io, has_property('NTIID', is_not(None)))
 
         credit_definition = CreditDefinition(credit_type=u'Credit')
         ext_obj = to_external_object(credit_definition)
