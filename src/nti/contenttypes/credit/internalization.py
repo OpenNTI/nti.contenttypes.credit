@@ -81,3 +81,18 @@ class _CreditDefinitinoUpdater(InterfaceObjectIO):
     _excluded_in_ivars_ = frozenset(
         getattr(InterfaceObjectIO, '_excluded_in_ivars_').union({'NTIID', 'ntiid'})
     )
+
+    _trimmed_fields = ('credit_type', 'credit_units')
+
+    def updateFromExternalObject(self, parsed, *args, **kwargs):
+
+        for fname in self._trimmed_fields or ():
+            val = parsed.get(fname)
+
+            if val and isinstance(val, six.string_types):
+                parsed[fname] = val.strip()
+
+        result = super(_CreditDefinitinoUpdater, self).updateFromExternalObject(parsed, *args, **kwargs)
+
+        return result
+
