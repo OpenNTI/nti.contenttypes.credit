@@ -103,6 +103,10 @@ class TestExternalization(unittest.TestCase):
         assert_that(ext_obj['credit_units'], is_(u'Hours'))
         assert_that(ext_obj['NTIID'], is_(definition_ntiid))
 
+        # Should be trimmed
+        ext_obj['credit_type'] = u' Credit '
+        ext_obj['credit_units'] = u' Hours '
+
         factory = find_factory_for(ext_obj)
         assert_that(factory, not_none())
         new_io = factory()
