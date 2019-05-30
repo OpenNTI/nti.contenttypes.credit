@@ -27,6 +27,7 @@ from nti.schema.field import Object
 from nti.schema.field import ValidDatetime
 from nti.schema.field import IndexedIterable
 from nti.schema.field import DecodingValidTextLine as ValidTextLine
+from nti.schema.field import StrippedValidTextLine
 
 
 class ICreditDefinition(IContained, ICreated, ILastModified):
@@ -34,17 +35,17 @@ class ICreditDefinition(IContained, ICreated, ILastModified):
     The basic credit type object. This may be defined once and referenced in
     many places.
     """
-    credit_type = ValidTextLine(title=u'The credit type',
-                                required=True,
-                                min_length=1,
-                                max_length=16)
+    credit_type = StrippedValidTextLine(title=u'The credit type',
+                                        required=True,
+                                        min_length=1,
+                                        max_length=16)
 
-    credit_units = ValidTextLine(title=u'The course units (hours, points, etc)',
-                                 description=u'The course units (hours, points, etc)',
-                                 required=True,
-                                 default='',
-                                 min_length=0,
-                                 max_length=16)
+    credit_units = StrippedValidTextLine(title=u'The course units (hours, points, etc)',
+                                         description=u'The course units (hours, points, etc)',
+                                         required=True,
+                                         default='',
+                                         min_length=0,
+                                         max_length=16)
 
     NTIID = ValidNTIID(title=u"The NTIID of the credit definition",
                        required=False)
