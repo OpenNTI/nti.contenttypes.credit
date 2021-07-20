@@ -14,11 +14,9 @@ from zope.cachedescriptors.property import Lazy
 
 from zope.container.contained import Contained
 
-from nti.contenttypes.credit.common import generate_awarded_credit_ntiid
 from nti.contenttypes.credit.common import generate_awardable_credit_ntiid
 from nti.contenttypes.credit.common import generate_credit_definition_ntiid
 
-from nti.contenttypes.credit.interfaces import IAwardedCredit
 from nti.contenttypes.credit.interfaces import IAwardableCredit
 from nti.contenttypes.credit.interfaces import ICreditDefinition
 from nti.contenttypes.credit.interfaces import ICreditDefinitionContainer
@@ -142,44 +140,10 @@ class AwardableCredit(PersistentCreatedAndModifiedTimeObject,
         return generate_awardable_credit_ntiid()
 
 
-@WithRepr
-@interface.implementer(IAwardedCredit)
-class AwardedCredit(PersistentCreatedAndModifiedTimeObject,
-                    SchemaConfigured):
+import zope.deferredimport
+zope.deferredimport.initialize()
 
-    createDirectFieldProperties(IAwardedCredit)
-    __external_can_create__ = False
-
-    __parent__ = None
-    _credit_definition = None
-    creator = None
-    NTIID = alias('ntiid')
-
-    mimeType = mime_type = "application/vnd.nextthought.credit.awardedcredit"
-
-    def __init__(self, *args, **kwargs):
-        super(AwardedCredit, self).__init__(*args, **kwargs)
-        SchemaConfigured.__init__(self, *args, **kwargs)
-
-    @property
-    def credit_definition(self):
-        result = None
-        if self._credit_definition is not None:
-            result = self._credit_definition()
-        return result
-
-    @credit_definition.setter
-    def credit_definition(self, value):
-        self._credit_definition = IWeakRef(value)
-
-    @Lazy
-    def ntiid(self):
-        return generate_awarded_credit_ntiid()
-
-    @Lazy
-    def issuer(self):
-        return getattr(self.creator, 'username', self.creator)
-
-    @Lazy
-    def awarded_date(self):
-        return self.created
+zope.deferredimport.deprecatedFrom(
+    "moved to nti.app.contenttypes.credit",
+    "nti.app.contenttypes.credit",
+    "AwardedCredit")
