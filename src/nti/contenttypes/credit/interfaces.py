@@ -22,6 +22,7 @@ from nti.base.interfaces import ILastModified
 
 from nti.ntiids.schema import ValidNTIID
 
+from nti.schema.field import Int
 from nti.schema.field import Number
 from nti.schema.field import Object
 from nti.schema.field import ValidDatetime
@@ -46,6 +47,12 @@ class ICreditDefinition(IContained, ICreated, ILastModified):
                                          default='',
                                          min_length=0,
                                          max_length=16)
+    
+    credit_precision = Int(title=u"Credit amount precision value",
+                              description=u"The decimal precision of the credit amount to be displayed and used in aggregation",
+                              required=True,
+                              min=1,
+                              default=2)
 
     NTIID = ValidNTIID(title=u"The NTIID of the credit definition",
                        required=False)
