@@ -51,7 +51,7 @@ class ICreditDefinition(IContained, ICreated, ILastModified):
     credit_precision = Int(title=u"Credit amount precision value",
                               description=u"The decimal precision of the credit amount to be displayed and used in aggregation",
                               required=True,
-                              min=1,
+                              min=0,
                               default=2)
 
     NTIID = ValidNTIID(title=u"The NTIID of the credit definition",
