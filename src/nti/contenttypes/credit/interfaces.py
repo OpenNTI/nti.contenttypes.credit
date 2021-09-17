@@ -52,6 +52,7 @@ class ICreditDefinition(IContained, ICreated, ILastModified):
                               description=u"The decimal precision of the credit amount to be displayed and used in aggregation",
                               required=True,
                               min=0,
+                              max=2,
                               default=2)
 
     NTIID = ValidNTIID(title=u"The NTIID of the credit definition",
@@ -91,6 +92,12 @@ class IAwardableCredit(ICreated, ILastModified):
                                title=u'The credit definition',
                                required=True)
 
+    #In the future it would be nice to have these amounts stored as Ints that can be scaled for display
+    #based on some "base_value", similar to how banks handle storing money in terms of "cents". For
+    #example we could define 0.01 credits as a a "credit_cent" and have the amounts calculated in
+    #terms of this (i.e. this AwardableCredit is worth 200 "credit_cent"s which are then converted to 
+    #Credits by dividing by 100 on display. Migrating to this would help alleviate floating point errors
+    #and reduce overhead,
     amount = Number(title=u"Amount",
                    description=u"The amount of the ICreditDefinition units that are awarded.",
                    required=True,
