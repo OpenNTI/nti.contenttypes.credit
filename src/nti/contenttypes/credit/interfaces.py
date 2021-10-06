@@ -25,6 +25,7 @@ from nti.ntiids.schema import ValidNTIID
 from nti.schema.field import Int
 from nti.schema.field import Number
 from nti.schema.field import Object
+from nti.schema.field import ValidText
 from nti.schema.field import ValidDatetime
 from nti.schema.field import IndexedIterable
 from nti.schema.field import DecodingValidTextLine as ValidTextLine
@@ -127,7 +128,7 @@ class IAwardedCredit(ICreated, ILastModified, IContained):
                           min_length=2,
                           required=True)
 
-    description = ValidTextLine(title=u"Description of the awarded credit", required=False)
+    description = ValidText(title=u"Description of the awarded credit", required=False)
 
     credit_definition = Object(ICreditDefinition,
                                title=u'The credit definition',
