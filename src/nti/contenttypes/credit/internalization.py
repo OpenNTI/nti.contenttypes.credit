@@ -63,7 +63,7 @@ class AbstractNormalizationUpdater(InterfaceObjectIO):
                 parsed['credit_definition'] = credit_definition_obj
         result = super(AbstractNormalizationUpdater, self).updateFromExternalObject(parsed, *args, **kwargs)
         return result
-
+CreditDefinitionNormalizationUpdater = AbstractNormalizationUpdater
 
 @component.adapter(IAwardedCredit)
 @interface.implementer(IInternalObjectUpdater)
