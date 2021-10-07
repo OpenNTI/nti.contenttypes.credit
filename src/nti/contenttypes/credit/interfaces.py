@@ -17,8 +17,14 @@ from zope.container.constraints import contains
 from zope.container.interfaces import IContained
 from zope.container.interfaces import IContainer
 
+from zope.i18n import translate
+
+from zope.schema.interfaces import ConstraintNotSatisfied
+
 from nti.base.interfaces import ICreated
 from nti.base.interfaces import ILastModified
+
+from nti.contenttypes.credit import MessageFactory as _
 
 from nti.ntiids.schema import ValidNTIID
 
@@ -107,6 +113,21 @@ class IAwardableCredit(ICreated, ILastModified):
 
     NTIID = ValidNTIID(title=u"The NTIID of the awardable credit",
                        required=False)
+    
+    @interface.invariant
+    def CreditAmountInvariant(self):
+        if      self.credit_definition \
+            and self.amount \
+            and self.credit_definition.credit_precision is not None:
+            amount_str = str(self.amount)
+            prec = self.credit_definition.credit_precision
+            if      '.' in amount_str \
+                and len(str(amount_str).split('.')[1]) > prec:
+                msg = translate(_(u"Invalid amount for credit precision ${precision}.",
+                                  mapping={'precision': prec}))
+                ve = ConstraintNotSatisfied(msg)
+                ve.field = IAwardableCredit['amount']
+                raise ve
 
 
 class IAwardableCreditContext(interface.Interface):

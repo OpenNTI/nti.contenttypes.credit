@@ -10,7 +10,9 @@ from __future__ import absolute_import
 from hamcrest import is_
 from hamcrest import none
 from hamcrest import is_not
+from hamcrest import raises
 from hamcrest import not_none
+from hamcrest import calling
 from hamcrest import has_length
 from hamcrest import assert_that
 from hamcrest import has_property
@@ -22,6 +24,8 @@ import fudge
 import unittest
 
 from zope import component
+
+from zope.schema.interfaces import ConstraintNotSatisfied
 
 from zc.intid import IIntIds
 
@@ -158,6 +162,71 @@ class TestExternalization(unittest.TestCase):
 
         factory = find_factory_for(ext_obj)
         assert_that(factory, not_none())
+        
+    def test_awardable_credit_precision(self):
+        credit_definition = CreditDefinition(credit_type=u'Credit',
+                                             credit_units=u'Hours')
+        intids = fudge.Fake().provides('getObject').returns(credit_definition)
+        intids.provides('getId').returns(10)
+        component.getGlobalSiteManager().registerUtility(intids, IIntIds)
+        add_intid(credit_definition)
+        self.container[credit_definition.ntiid] = credit_definition
+        awardable_credit = AwardableCredit(amount=42,
+                                           credit_definition=credit_definition)
+
+        ext_obj = to_external_object(awardable_credit)
+        assert_that(ext_obj[CLASS], is_('AwardableCredit'))
+        assert_that(ext_obj[MIMETYPE],
+                    is_(AwardableCredit.mime_type))
+        assert_that(ext_obj[CREATED_TIME], not_none())
+        assert_that(ext_obj[LAST_MODIFIED], not_none())
+        assert_that(ext_obj['amount'], is_(42))
+        assert_that(ext_obj['credit_definition']['credit_type'], is_(u'Credit'))
+        assert_that(ext_obj['credit_definition']['credit_units'], is_(u'Hours'))
+
+        ext_obj['credit_definition'] = credit_definition.ntiid
+        factory = find_factory_for(ext_obj)
+        assert_that(factory, not_none())
+        new_io = factory()
+        update_from_external_object(new_io, ext_obj, require_updater=True)
+        
+        # Invalid
+        credit_definition.credit_precision = 2
+        ext_obj['amount'] = 1.234
+        with self.assertRaises(ConstraintNotSatisfied) as exc:
+            update_from_external_object(new_io, ext_obj, require_updater=True)
+        assert_that(exc.exception.message, is_(u'Invalid amount for credit precision 2.'))
+        
+        credit_definition.credit_precision = 1
+        ext_obj['amount'] = 1.67
+        with self.assertRaises(ConstraintNotSatisfied) as exc:
+            update_from_external_object(new_io, ext_obj, require_updater=True)
+        assert_that(exc.exception.message, is_(u'Invalid amount for credit precision 1.'))
+        
+        credit_definition.credit_precision = 0
+        ext_obj['amount'] = 1.6
+        with self.assertRaises(ConstraintNotSatisfied) as exc:
+            update_from_external_object(new_io, ext_obj, require_updater=True)
+        assert_that(exc.exception.message, is_(u'Invalid amount for credit precision 0.'))
+        
+        credit_definition.credit_precision = 0
+        ext_obj['amount'] = 1.
+        with self.assertRaises(ConstraintNotSatisfied) as exc:
+            update_from_external_object(new_io, ext_obj, require_updater=True)
+        assert_that(exc.exception.message, is_(u'Invalid amount for credit precision 0.'))
+        
+        # Valid
+        credit_definition.credit_precision = 0
+        ext_obj['amount'] = 1
+        update_from_external_object(new_io, ext_obj, require_updater=True)
+        
+        credit_definition.credit_precision = 1
+        ext_obj['amount'] = 1.6
+        update_from_external_object(new_io, ext_obj, require_updater=True)
+        
+        credit_definition.credit_precision = 2
+        ext_obj['amount'] = 2.67
+        update_from_external_object(new_io, ext_obj, require_updater=True)
 
 
 class TestCreditDefinitionContainer(unittest.TestCase):
