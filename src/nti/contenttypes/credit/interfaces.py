@@ -88,31 +88,29 @@ class ICreditDefinitionContainer(IContainer):
         """
         Lookup the :class: `ICreditDefinition` by credit_type and credit_units.
         """
-
-
-class IAwardableCredit(ICreated, ILastModified):
+        
+    
+class ICreditAmountMixin(ICreated, ILastModified):
     """
-    Composes a credit definition with a value amount, useful for displaying.
+    The amount (and validation) of a credit definition to award or was awarded.
     """
+        
     credit_definition = Object(ICreditDefinition,
                                title=u'The credit definition',
-                               required=True)
-
-    #In the future it would be nice to have these amounts stored as Ints that can be scaled for display
-    #based on some "base_value", similar to how banks handle storing money in terms of "cents". For
-    #example we could define 0.01 credits as a a "credit_cent" and have the amounts calculated in
-    #terms of this (i.e. this AwardableCredit is worth 200 "credit_cent"s which are then converted to 
-    #Credits by dividing by 100 on display. Migrating to this would help alleviate floating point errors
-    #and reduce overhead,
+                               required=True)   
+     
+    # In the future it would be nice to have these amounts stored as Ints that can be scaled for display
+    # based on some "base_value", similar to how banks handle storing money in terms of "cents". For
+    # example we could define 0.01 credits as a a "credit_cent" and have the amounts calculated in
+    # terms of this (i.e. this AwardableCredit is worth 200 "credit_cent"s which are then converted to 
+    # Credits by dividing by 100 on display. Migrating to this would help alleviate floating point errors
+    # and reduce overhead,    
     amount = Number(title=u"Amount",
                    description=u"The amount of the ICreditDefinition units that are awarded.",
                    required=True,
                    min=0.0,
                    default=None)
-
-    NTIID = ValidNTIID(title=u"The NTIID of the awardable credit",
-                       required=False)
-    
+      
     @interface.invariant
     def CreditAmountInvariant(self):
         if      self.credit_definition \
@@ -126,8 +124,16 @@ class IAwardableCredit(ICreated, ILastModified):
                                   mapping={'precision': prec}))
                 ve = ConstraintNotSatisfied(msg)
                 ve.field = IAwardableCredit['amount']
-                raise ve
-
+                raise ve  
+        
+class IAwardableCredit(ICreditAmountMixin):
+    """
+    Composes a credit definition with a value amount, useful for displaying.
+    """
+    
+    NTIID = ValidNTIID(title=u"The NTIID of the awardable credit",
+                       required=False)
+    
 
 class IAwardableCreditContext(interface.Interface):
     """
@@ -140,7 +146,7 @@ class IAwardableCreditContext(interface.Interface):
                                         min_length=0)
 
 
-class IAwardedCredit(ICreated, ILastModified, IContained):
+class IAwardedCredit(ICreditAmountMixin, IContained):
     """
     A credit that has been awarded to a user.
     """
@@ -149,16 +155,6 @@ class IAwardedCredit(ICreated, ILastModified, IContained):
                           required=True)
 
     description = ValidTextLine(title=u"Description of the awarded credit", required=False)
-
-    credit_definition = Object(ICreditDefinition,
-                               title=u'The credit definition',
-                               required=True)
-
-    amount = Number(title=u"Amount",
-                   description=u"The amount of the ICreditDefinition units that are awarded.",
-                   required=True,
-                   min=0.0,
-                   default=None)
 
     awarded_date = ValidDatetime(title=u"This awarded date",
                                  description=u"""When the credit was awarded. If not provided, will

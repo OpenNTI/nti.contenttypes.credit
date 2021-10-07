@@ -209,15 +209,13 @@ class TestExternalization(unittest.TestCase):
             update_from_external_object(new_io, ext_obj, require_updater=True)
         assert_that(exc.exception.message, is_(u'Invalid amount for credit precision 0.'))
         
-        credit_definition.credit_precision = 0
-        ext_obj['amount'] = 1.
-        with self.assertRaises(ConstraintNotSatisfied) as exc:
-            update_from_external_object(new_io, ext_obj, require_updater=True)
-        assert_that(exc.exception.message, is_(u'Invalid amount for credit precision 0.'))
-        
         # Valid
         credit_definition.credit_precision = 0
         ext_obj['amount'] = 1
+        update_from_external_object(new_io, ext_obj, require_updater=True)
+        
+        credit_definition.credit_precision = 0
+        ext_obj['amount'] = "1"
         update_from_external_object(new_io, ext_obj, require_updater=True)
         
         credit_definition.credit_precision = 1

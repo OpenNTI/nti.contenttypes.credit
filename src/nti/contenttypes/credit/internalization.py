@@ -27,7 +27,7 @@ from nti.externalization.interfaces import IInternalObjectUpdater
 logger = __import__('logging').getLogger(__name__)
 
 
-class CreditDefinitionNormalizationUpdater(InterfaceObjectIO):
+class AbstractNormalizationUpdater(InterfaceObjectIO):
     """
     Finds and maps to an existing credit definition ref during internalization.
     """
@@ -42,6 +42,13 @@ class CreditDefinitionNormalizationUpdater(InterfaceObjectIO):
         """
         Normalize our credit definition.
         """
+        # Not the best place for this...
+        if 'amount' in parsed:
+            try:
+                if float(parsed['amount']).is_integer():
+                    parsed['amount'] = int(parsed['amount'])
+            except TypeError:
+                pass
         credit_definition = parsed.get('credit_definition')
         if credit_definition is not None:
             if isinstance(credit_definition, six.string_types):
@@ -54,20 +61,20 @@ class CreditDefinitionNormalizationUpdater(InterfaceObjectIO):
                 container = component.getUtility(ICreditDefinitionContainer)
                 credit_definition_obj = container.get_credit_definition(credit_definition_ntiid)
                 parsed['credit_definition'] = credit_definition_obj
-        result = super(CreditDefinitionNormalizationUpdater, self).updateFromExternalObject(parsed, *args, **kwargs)
+        result = super(AbstractNormalizationUpdater, self).updateFromExternalObject(parsed, *args, **kwargs)
         return result
 
 
 @component.adapter(IAwardedCredit)
 @interface.implementer(IInternalObjectUpdater)
-class _AwardedCreditUpdater(CreditDefinitionNormalizationUpdater):
+class _AwardedCreditUpdater(AbstractNormalizationUpdater):
 
     _ext_iface_upper_bound = IAwardedCredit
 
 
 @component.adapter(IAwardableCredit)
 @interface.implementer(IInternalObjectUpdater)
-class _AwardableCreditUpdater(CreditDefinitionNormalizationUpdater):
+class _AwardableCreditUpdater(AbstractNormalizationUpdater):
 
     _ext_iface_upper_bound = IAwardableCredit
 
