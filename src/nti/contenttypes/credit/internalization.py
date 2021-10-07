@@ -47,7 +47,7 @@ class AbstractNormalizationUpdater(InterfaceObjectIO):
             try:
                 if float(parsed['amount']).is_integer():
                     parsed['amount'] = int(parsed['amount'])
-            except TypeError:
+            except (TypeError, ValueError):
                 pass
         credit_definition = parsed.get('credit_definition')
         if credit_definition is not None:
