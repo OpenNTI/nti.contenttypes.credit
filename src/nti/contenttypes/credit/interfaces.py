@@ -120,8 +120,9 @@ class ICreditAmountMixin(ICreated, ILastModified):
             prec = self.credit_definition.credit_precision
             if      '.' in amount_str \
                 and len(str(amount_str).split('.')[1]) > prec:
-                msg = translate(_(u"Invalid amount for credit precision ${precision}.",
-                                  mapping={'precision': prec}))
+                display_prec = '0' if not prec else '0.%s' % ('0' * prec)
+                msg = translate(_(u"Invalid amount for credit precision (${precision}).",
+                                  mapping={'precision': display_prec}))
                 ve = ConstraintNotSatisfied(msg)
                 ve.field = IAwardableCredit['amount']
                 raise ve  
